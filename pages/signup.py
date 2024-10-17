@@ -1,7 +1,7 @@
 import streamlit as st
 import pyrebase
 
-#header
+# header
 st.set_page_config(page_title="Sign Up", layout="centered", page_icon="favicon.ico")
 
 firebaseConfig = {
@@ -18,24 +18,42 @@ firebaseConfig = {
 # Firebase initialization
 firebase = pyrebase.initialize_app(firebaseConfig)
 auth = firebase.auth()
+db = firebase.database()  # Initialize the database
 
 # CSS for styling
-def singup_css():
+def signup_css():
     style = """
         <style>
-            .st-emotion-cache-bm2z3a { background-color: #CBDFDC; position: fixed} /*สีพื้นหลัง*/
+            .st-emotion-cache-bm2z3a { background-color: #CBDFDC; position: fixed; } /* สีพื้นหลัง */
             .st-emotion-cache-uef7qa { color: #ffeece; } /* สีข้อความในฟิลด์ input */
             .st-b7 { background-color: #ffeece; } 
-            .st-cc { border-bottom: 2px solid #f4e0b6; } /*ขอบinputตอนกด*/
-            .st-cb { border-top: 2px solid #f4e0b6; } /*ขอบinputตอนกด*/
-            .st-ca { border-right: 2px solid #f4e0b6; } /*ขอบinputตอนกด*/
-            .st-c9 { border-left: 2px solid #f4e0b6; } /*ขอบinputตอนกด*/
+            .st-cc { border-bottom: 2px solid #f4e0b6; } /* ขอบ input ตอนกด */
+            .st-cb { border-top: 2px solid #f4e0b6; } /* ขอบ input ตอนกด */
+            .st-ca { border-right: 2px solid #f4e0b6; } /* ขอบ input ตอนกด */
+            .st-c9 { border-left: 2px solid #f4e0b6; } /* ขอบ input ตอนกด */
             .st-emotion-cache-12fmjuu { background-color: #CBDFDC; }
-            .st-emotion-cache-1wmy9hl { background-color: #fff; border-radius: 20px; margin:0 40px 20px 40px;} /*สีพื้นหลังกรอบด้านใน*/
-            .st-emotion-cache-1vt4y43 { border: 0px; } /*ขอบปุ่ม*/
+            .st-emotion-cache-1n76uvr{
+                padding: 0 40px 20px 40px; 
+            }
+            .st-emotion-cache-1wmy9hl { 
+                background-color: #fff; 
+                border-radius: 20px; } /* สีพื้นหลังกรอบด้านใน */
+                
+            .st-emotion-cache-1vt4y43 { border: 0px; } /* ขอบปุ่ม */
             .stText { color: #333366; }
-            .stButton>button { background-color: #ee9fa7; color: #000; } /*ปุ่ม*/
-            .stButton>button:hover { box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px; background-color: #ee9fa7; color: #000; } /*ปุ่ม*/
+            .stButton>button {
+                background-color: #ee9fa7; /* สีปุ่ม */
+                color: #000; /* สีข้อความในปุ่ม */
+                border-radius: 5px; /* มุมโค้ง */
+                padding: 10px; /* ระยะขอบภายใน */
+                width: 100%; /* ปรับขนาดปุ่มให้เต็ม */
+                cursor: pointer; /* เปลี่ยนเคอร์เซอร์ */
+                border: none; /* ไม่มีขอบ */
+            }
+            .stButton>button:hover {
+                box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px; /* เงาเมื่อเลื่อนเมาส์ */
+                color: #000;
+            }
             footer { visibility: hidden; }
             #MainMenu { visibility: hidden; }
         </style>
@@ -44,10 +62,11 @@ def singup_css():
 
 # Sign Up function
 def sign_up():
-    singup_css()  
+    signup_css()  
     
     # Create a container for centering content
     with st.container():
+        
         st.title("Sign Up")
         st.write("")  # Add space
         
@@ -63,8 +82,17 @@ def sign_up():
         # Sign Up button logic
         if st.button("Sign Up"):
             try:
+                # Create user in Firebase Authentication
                 user = auth.create_user_with_email_and_password(email, password)
                 st.session_state.signup_status = "success"
+
+                # Save user data in Firestore
+                user_id = user['localId']  # Get user ID
+                db.child("users").child(user_id).set({
+                    "username": username,
+                    "email": email,
+                })
+
             except Exception as e:
                 error_message = str(e)
                 if "EMAIL_EXISTS" in error_message:
@@ -78,6 +106,7 @@ def sign_up():
             st.session_state.current_page = "login"
             st.switch_page("pages/login.py")
             st.stop()  # Stop processing to prevent refresh
+
 
 # Run the app
 if __name__ == "__main__":
