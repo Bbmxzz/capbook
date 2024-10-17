@@ -2,3 +2,4 @@ streamlit
 pyrebase4
 easyocr
 Pillow
+firebase_admin
