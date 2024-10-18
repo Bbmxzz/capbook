@@ -1,6 +1,8 @@
 streamlit
 pyrebase4
 easyocr
+roboflow
 Pillow
 firebase_admin
 datetime
+pythainlp

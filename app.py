@@ -14,10 +14,12 @@ def main():
     # ตรวจสอบสถานะของ current_page และเรียก switch_page ตามหน้า
     if st.session_state.current_page == "login":
         st.switch_page("pages/login.py")  # ไปที่หน้า Login
-    if st.session_state.current_page == "sign_up":
+    elif st.session_state.current_page == "sign_up":
         st.switch_page("pages/signup.py")  # ไปที่หน้า Sign Up
     elif st.session_state.current_page == "mybook":
         st.switch_page("pages/mybook.py")  # ไปที่หน้า Chatbot
+    elif st.session_state.current_page == "search":
+        st.switch_page("pages/search.py")  # ไปที่หน้า Chatbot
 
 if __name__ == "__main__":
     main()
