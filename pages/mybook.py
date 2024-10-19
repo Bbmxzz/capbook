@@ -72,7 +72,6 @@ def add_book_page():
                                 blob.upload_from_file(uploaded_file, content_type='image/jpeg')
                                 blob.make_public()  # ทำให้ไฟล์เป็นสาธารณะ
                                 image_url = blob.public_url  # รับ URL สาธารณะของภาพ
-                                st.write(f"Public URL: {image_url}")
 
                                 # บันทึกรายละเอียดหนังสือไปยัง Firestore
                                 db.collection("uploads").document(email).collection("book").add({
