@@ -3,6 +3,7 @@ import os
 import tempfile
 from firebase_config import db, bucket
 from process import process_book_image, model
+
 # Header
 st.set_page_config(page_title="Search", layout="centered", page_icon="favicon.ico")
 
@@ -30,7 +31,6 @@ def search_book_page(email):
                         corrected_title = process_book_image(temp_file_path, model)
 
                         if corrected_title:
-
                             # Check Firestore for the book
                             images_ref = db.collection("uploads").document(email).collection("book").stream()
                             found = False
@@ -41,13 +41,16 @@ def search_book_page(email):
                                     st.image(image_data['image_url'], caption=image_data.get('namebook', ''))
                                     found = True
                                     break  # Stop searching once we find the book
-                            
+
                             if found:
                                 st.session_state.file_uploaded = True  # Mark the file as uploaded
                             else:
-                                st.write("ไม่พบหนังสือในระบบ.")
+                                st.write("No books found or data passed incorrectly.")
+                                st.session_state.file_uploaded = True
                         else:
                             st.write("ไม่สามารถอ่านชื่อหนังสือจากภาพได้.")
+                            st.session_state.current_page = "mybook"  # Change to Home page
+                            st.switch_page("pages/mybook.py")
             except Exception as e:
                 st.error(f"เกิดข้อผิดพลาด: {e}")
     else:
