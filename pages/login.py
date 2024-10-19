@@ -65,7 +65,6 @@ def login():
                     if stored_password and stored_password == password:
                         st.session_state.email = email  # Store user UID
                         st.session_state.login_status = "success"
-                        st.session_state.email = email  # Store email in session state
                         st.success("Login successful!")
                         st.session_state.current_page = "mybook"  # Change to Home page
                         st.switch_page("pages/mybook.py")
