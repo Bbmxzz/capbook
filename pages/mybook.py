@@ -83,6 +83,8 @@ def add_book_page():
                                 st.switch_page("pages/mybook.py")
                         else:
                             st.write("ไม่สามารถอ่านชื่อหนังสือจากภาพได้.")
+                            st.session_state.current_page = "mybook"  # Change to Home page
+                            st.switch_page("pages/mybook.py")
                 except Exception as e:
                     st.error(f"เกิดข้อผิดพลาด: {e}")
             else:
