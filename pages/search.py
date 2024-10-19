@@ -8,15 +8,15 @@ from process import process_book_image, model
 st.set_page_config(page_title="Search", layout="centered", page_icon="favicon.ico")
 
 def search_book_page(email):
-    st.title("ค้นหาหนังสือ")
+    st.title("Search for a Book")
 
-    # ตรวจสอบสถานะว่ามีการอัปโหลดไฟล์หรือไม่
+    # Check if a file has been uploaded
     if 'file_uploaded' not in st.session_state:
-        st.session_state.file_uploaded = False  # เริ่มต้นสถานะ
+        st.session_state.file_uploaded = False  # Initial state
 
     # File upload for searching
     if not st.session_state.file_uploaded:
-        search_file = st.file_uploader("อัพโหลดรูปภาพหนังสือเพื่อค้นหา", type=["jpg", "jpeg", "png"])
+        search_file = st.file_uploader("Upload a book image to search", type=["jpg", "jpeg", "png"])
 
         if search_file is not None:
             try:
@@ -26,7 +26,7 @@ def search_book_page(email):
                     temp_file_path = temp_file.name
 
                 if os.path.exists(temp_file_path):
-                    with st.spinner("กำลังค้นหาหนังสือ..."):
+                    with st.spinner("Searching for the book..."):
                         # Process the uploaded image
                         corrected_title = process_book_image(temp_file_path, model)
 
@@ -37,7 +37,7 @@ def search_book_page(email):
                             for image_doc in images_ref:
                                 image_data = image_doc.to_dict()
                                 if corrected_title.strip() in image_data.get('namebook', ''):
-                                    st.write(f"Found Books: {corrected_title.strip()}")
+                                    st.write(f"Found Book: {corrected_title.strip()}")
                                     st.image(image_data['image_url'], caption=image_data.get('namebook', ''))
                                     found = True
                                     break  # Stop searching once we find the book
@@ -48,17 +48,15 @@ def search_book_page(email):
                                 st.write("No books found or data passed incorrectly.")
                                 st.session_state.file_uploaded = True
                         else:
-                            st.write("ไม่สามารถอ่านชื่อหนังสือจากภาพได้.")
-                            st.session_state.current_page = "mybook"  # Change to Home page
-                            st.switch_page("pages/mybook.py")
+                            st.write("Unable to read the book title from the image.")
             except Exception as e:
-                st.error(f"เกิดข้อผิดพลาด: {e}")
+                st.error(f"An error occurred: {e}")
     else:
-        st.write("คุณได้ค้นหาหนังสือแล้ว.")
+        st.write("You have already searched for a book.")
 
     
 def main():
-    st.title("ระบบจัดการหนังสือ")
+    st.title("Book Management System")
 
     if 'email' in st.session_state and st.session_state.email:
         email = st.session_state.email
@@ -66,7 +64,7 @@ def main():
         search_book_page(email)  # Call the search book function
         
     else:
-        st.write("ผู้ใช้ยังไม่ได้เข้าสู่ระบบ.")
+        st.write("User is not logged in.")
 
 # Run the app
 if __name__ == "__main__":

@@ -3,18 +3,21 @@ import os
 import tempfile
 from firebase_config import db, bucket
 from process import process_book_image, model
+
 # Header
-st.set_page_config(page_title="My book", layout="centered", page_icon="favicon.ico")
+st.set_page_config(page_title="My Book", layout="centered", page_icon="favicon.ico")
 
 def display_books(email):
     try:
         images_ref = db.collection("uploads").document(email).collection("book").stream()
-        if st.button("search"):
+        
+        if st.button("Search"):
             st.session_state.current_page = "search"  # Change to search page
             st.switch_page("pages/search.py")
+        
         if st.button("Logout"):
             st.session_state.email = None
-            st.session_state.current_page = "login"  # Change to search page
+            st.session_state.current_page = "login"  # Change to login page
             st.switch_page("pages/login.py")
 
         if images_ref:
@@ -32,18 +35,18 @@ def display_books(email):
                     index += 1  # Increment the index for the next image
 
             if index == 0:
-                st.write("ไม่พบรูปภาพในระบบ.")
+                st.write("No images found in the system.")
         else:
-            st.write("ไม่พบรูปภาพในระบบ.")
+            st.write("No images found in the system.")
 
     except Exception as e:
-        st.write(f"เกิดข้อผิดพลาด: {e}")
+        st.write(f"An error occurred: {e}")
 
 def add_book_page():
-    st.title("เพิ่มหนังสือใหม่")
+    st.title("Add New Book")
 
     # File upload
-    uploaded_file = st.file_uploader("อัพโหลดรูปภาพหนังสือ", type=["jpg", "jpeg", "png"])
+    uploaded_file = st.file_uploader("Upload a book image", type=["jpg", "jpeg", "png"])
 
     if uploaded_file is not None:
         try:
@@ -57,45 +60,43 @@ def add_book_page():
             if os.path.exists(temp_file_path):
                 try:
                     # Process the image to find the book title
-                    with st.spinner("กำลังตรวจจับตำแหน่งชื่อหนังสือ..."):
+                    with st.spinner("Detecting the book title..."):
                         corrected_title = process_book_image(temp_file_path, model)
 
                         if corrected_title:
-                            st.write(f"ชื่อหนังสือหลังแก้ไข: {corrected_title.strip()}")
+                            st.write(f"Corrected Book Title: {corrected_title.strip()}")
 
-                            # แสดงปุ่ม "เพิ่มหนังสือ" หลังจากอ่านชื่อเรียบร้อยแล้ว
-                            if st.button("เพิ่มหนังสือ"):
+                            # Show "Add Book" button after reading the title
+                            if st.button("Add Book"):
                                 uploaded_file.seek(0)
                                 email = st.session_state.email
-                                folder_path = f"{email}/{uploaded_file.name}"  # สร้างเส้นทางที่มีชื่อเป็นอีเมลของผู้ใช้
-                                blob = bucket.blob(folder_path)  # อัปโหลดไฟล์ไปที่โฟลเดอร์ email ของผู้ใช้
+                                folder_path = f"{email}/{uploaded_file.name}"  # Create a path with the user's email
+                                blob = bucket.blob(folder_path)  # Upload the file to the user's folder
                                 blob.upload_from_file(uploaded_file, content_type='image/jpeg')
-                                blob.make_public()  # ทำให้ไฟล์เป็นสาธารณะ
-                                image_url = blob.public_url  # รับ URL สาธารณะของภาพ
+                                blob.make_public()  # Make the file public
+                                image_url = blob.public_url  # Get the public URL of the image
 
-                                # บันทึกรายละเอียดหนังสือไปยัง Firestore
+                                # Save book details to Firestore
                                 db.collection("uploads").document(email).collection("book").add({
                                     "namebook": corrected_title.strip(),
                                     "image_url": image_url  # URL of the uploaded image
                                 })
-                                st.success("เพิ่มหนังสือเรียบร้อยแล้ว!")
+                                st.success("Book added successfully!")
                                 uploaded_file = None
                                 st.switch_page("pages/mybook.py")
                         else:
-                            st.write("ไม่สามารถอ่านชื่อหนังสือจากภาพได้.")
-                            st.session_state.current_page = "mybook"  # Change to Home page
-                            st.switch_page("pages/mybook.py")
+                            st.write("Unable to read the book title from the image.")
                 except Exception as e:
-                    st.error(f"เกิดข้อผิดพลาด: {e}")
+                    st.error(f"An error occurred: {e}")
             else:
-                st.error("ไฟล์ชั่วคราวไม่พบ.")
+                st.error("Temporary file not found.")
                 
         except Exception as e:
-            st.error(f"เกิดข้อผิดพลาด: {e}")
+            st.error(f"An error occurred: {e}")
 
 # Main function to display in the app
 def main():
-    st.title("ระบบจัดการหนังสือ")
+    st.title("Book Management System")
 
     if 'email' in st.session_state and st.session_state.email:
         email = st.session_state.email
@@ -103,7 +104,7 @@ def main():
         st.write("---")
         add_book_page()  # Call the add book function
     else:
-        st.write("ผู้ใช้ยังไม่ได้เข้าสู่ระบบ.")
+        st.write("User is not logged in.")
 
 # Run the app
 if __name__ == "__main__":
