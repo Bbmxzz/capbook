@@ -3,6 +3,8 @@ import os
 import tempfile
 from firebase_config import db, bucket
 from process import process_book_image, model
+# Header
+st.set_page_config(page_title="Search", layout="centered", page_icon="favicon.ico")
 
 def search_book_page(email):
     st.title("ค้นหาหนังสือ")

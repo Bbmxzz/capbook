@@ -3,7 +3,8 @@ import os
 import tempfile
 from firebase_config import db, bucket
 from process import process_book_image, model
-from PIL import Image
+# Header
+st.set_page_config(page_title="My book", layout="centered", page_icon="favicon.ico")
 
 def display_books(email):
     try:

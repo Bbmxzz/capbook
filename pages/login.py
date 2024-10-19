@@ -1,5 +1,7 @@
 import streamlit as st
 from firebase_config import db
+# Header
+st.set_page_config(page_title="Log In", layout="centered", page_icon="favicon.ico")
 
 def login_css():
     style = """
