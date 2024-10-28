@@ -89,8 +89,9 @@ def add_book_page():
                                     "namebook": corrected_title.strip(),
                                     "image_url": image_url  # URL of the uploaded image
                                 })
-                                st.switch_page("pages/mybook.py")
                                 st.success("Book added successfully!")
+                                st.switch_page("pages/mybook.py")
+                                
                                 
                         else:
                             st.write("Unable to read the book title from the image.")
