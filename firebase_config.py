@@ -4,7 +4,6 @@ import os
 
 
 if not firebase_admin._apps:
-    
     cred = credentials.Certificate({
     "type": os.getenv("type"),
     "project_id": os.getenv("project_id"),

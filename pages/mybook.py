@@ -90,8 +90,7 @@ def add_book_page():
                                     "image_url": image_url  # URL of the uploaded image
                                 })
                                 st.success("Book added successfully!")
-                                uploaded_file = None
-                                st.switch_page("pages/mybook.py")
+                                
                         else:
                             st.write("Unable to read the book title from the image.")
                 except Exception as e:
