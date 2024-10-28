@@ -10,8 +10,11 @@ st.set_page_config(page_title="Search", layout="centered", page_icon="favicon.ic
 def search_book_page(email):
     st.title("Search for a Book")
 
-    # File upload for searching
-    search_file = st.file_uploader("Upload a book image to search", type=["jpg", "jpeg", "png"])
+    st.markdown("<h4 style='font-size: 18px; color: #333366'>Upload a book image to search </h4>", unsafe_allow_html=True)
+
+    # File upload
+    search_file = st.file_uploader("", type=["jpg", "jpeg", "png"])
+    # search_file = st.file_uploader("Upload a book image to search", type=["jpg", "jpeg", "png"])
 
     if search_file is not None:
         try:
@@ -47,7 +50,18 @@ def search_book_page(email):
             st.error(f"An error occurred: {e}")
 
 def main():
-    st.title("Book Management System")
+    st.title("CapBook Management System")
+
+    col1, col2 = st.columns([7, 1])
+    with col1:
+        if st.button(" < Back to Mybook"):
+            st.session_state.current_page = "mybook"  # Change to search page
+            st.switch_page("pages/mybook.py")
+    with col2:
+        if st.button("Logout"):
+            st.session_state.email = None
+            st.session_state.current_page = "login"  # Change to login page
+            st.switch_page("pages/login.py")
 
     if 'email' in st.session_state and st.session_state.email:
         email = st.session_state.email

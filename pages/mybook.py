@@ -11,14 +11,19 @@ def display_books(email):
     try:
         images_ref = db.collection("uploads").document(email).collection("book").stream()
         
-        if st.button("Search"):
-            st.session_state.current_page = "search"  # Change to search page
-            st.switch_page("pages/search.py")
-        
-        if st.button("Logout"):
-            st.session_state.email = None
-            st.session_state.current_page = "login"  # Change to login page
-            st.switch_page("pages/login.py")
+        # Create two columns for Search and Logout buttons
+        col1, col2 = st.columns([7, 1])
+        with col1:
+            # Detect click event in Streamlit for switching to search page
+            if st.button("Search"):
+                st.session_state.current_page = "search"  # Change to search page
+                st.switch_page("pages/search.py")
+
+        with col2:
+            if st.button("Logout"):
+                st.session_state.email = None
+                st.session_state.current_page = "login"  # Change to login page
+                st.switch_page("pages/login.py")
 
         if images_ref:
             cols = st.columns(3)  # Create 3 columns for grid layout
@@ -45,8 +50,11 @@ def display_books(email):
 def add_book_page():
     st.title("Add New Book")
 
+    # ปรับขนาดฟอนต์ของประโยค Upload a book image
+    st.markdown("<h4 style='font-size: 18px; color: #333366'>Upload a book image</h4>", unsafe_allow_html=True)
+
     # File upload
-    uploaded_file = st.file_uploader("Upload a book image", type=["jpg", "jpeg", "png"])
+    uploaded_file = st.file_uploader("", type=["jpg", "jpeg", "png"])
 
     if uploaded_file is not None:
         try:
@@ -96,7 +104,7 @@ def add_book_page():
 
 # Main function to display in the app
 def main():
-    st.title("Book Management System")
+    st.title("CapBook Management System")
 
     if 'email' in st.session_state and st.session_state.email:
         email = st.session_state.email
