@@ -90,6 +90,7 @@ def add_book_page():
                                     "image_url": image_url  # URL of the uploaded image
                                 })
                                 st.success("Book added successfully!")
+                                st.write("<script>window.scrollTo(0, 0);</script>", unsafe_allow_html=True)
                                 st.switch_page("pages/mybook.py")
                                 
                                 
