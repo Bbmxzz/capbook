@@ -37,7 +37,7 @@ def process_book_image(image_path, model):
     try:
         # Open and convert image to RGB
         image = Image.open(image_path).convert("RGB")
-        st.image(image, caption="รูปภาพที่อัพโหลด", use_column_width=True)
+        st.image(image, caption="รูปภาพที่อัพโหลด", use_container_width=True)
 
         # Use Roboflow model to predict the positions of book titles
         predictions = model.predict(image_path, confidence=40, overlap=30).json()
