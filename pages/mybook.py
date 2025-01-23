@@ -35,7 +35,7 @@ def display_books(email):
 
                     # Display the image in the appropriate column
                     with cols[index % 3]:  # Use modulo to cycle through columns
-                        st.image(image_url, caption=image_data.get('namebook', ''), use_column_width='always')
+                        st.image(image_url, caption=image_data.get('namebook', ''), use_container_width='always')
                     
                     index += 1  # Increment the index for the next image
 
